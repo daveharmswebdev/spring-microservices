@@ -1,5 +1,7 @@
 package com.dave.microservices.currencyexchangeservice;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +17,15 @@ public class CircuitBreakerController {
             LoggerFactory.getLogger(CircuitBreakerController.class);
 
     @GetMapping("/sample-api")
-    @Retry(name = "sample-api", fallbackMethod = "hardCodedResponse")
+//    @Retry(name = "sample-api", fallbackMethod = "hardCodedResponse")
+    @CircuitBreaker(name = "default", fallbackMethod = "hardCodedResponse")
+    @RateLimiter(name = "default")
     public String sampleApi() {
         logger.info("Sample api received.");
-        ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8080/stupid-url", String.class);
-
-        return forEntity.getBody();
+//        ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8080/stupid-url", String.class);
+//
+//        return forEntity.getBody();
+        return "Sample API";
     }
 
     public String hardCodedResponse(Exception ex) {
